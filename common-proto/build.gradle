@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf'
+}
+
+group = 'ru.itwizardry'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    implementation "com.google.protobuf:protobuf-java:3.25.3"
+    implementation "io.grpc:grpc-stub:1.65.1"
+    implementation "io.grpc:grpc-protobuf:1.65.1"
+    compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
+}
+
+protobuf {
+    protoc { artifact = "com.google.protobuf:protoc:3.25.3" }
+    plugins { grpc { artifact = "io.grpc:protoc-gen-grpc-java:1.65.1" } }
+    generateProtoTasks {
+        all().each { t ->
+            t.plugins { grpc {} }
+            t.builtins { java {} }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        proto { srcDir 'src/main/proto' }
+        java {
+            srcDirs(
+                    "$projectDir/build/generated/source/proto/main/java",
+                    "$projectDir/build/generated/source/proto/main/grpc"
+            )
+        }
+    }
+}
+
+tasks.named('processResources') {
+    exclude('**/*.proto')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
