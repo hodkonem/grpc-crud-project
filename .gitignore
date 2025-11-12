@@ -1,0 +1,56 @@
+### Build ###
+.gradle/
+build/
+out/
+bin/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### Logs and temp ###
+*.log
+*.tmp
+*.swp
+*.bak
+
+### OS Files ###
+.DS_Store
+Thumbs.db
+
+### Gradle Wrapper ###
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+
+### Generated proto sources ###
+**/build/generated/**
+**/generated-sources/**
+**/generated/
+
+### Docker ###
+/docker-data/
+/*.env.local
+.env.backup
+
+### Tests ###
+/test-output/
+/target/
+
+### Spring ###
+.springBeans
+.sts4-cache
+
+### Others ###
+HELP.md
