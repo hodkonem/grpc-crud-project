@@ -7,16 +7,34 @@ group = 'ru.itwizardry'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
+    // Protobuf messages (GetUserRequest, UserResponse, etc.)
     implementation "com.google.protobuf:protobuf-java:3.25.3"
-    implementation "io.grpc:grpc-stub:1.65.1"
-    implementation "io.grpc:grpc-protobuf:1.65.1"
+
+    // Needed ONLY to compile generated *Grpc.java sources inside this module.
+    // Using compileOnly so we DON'T export runtime grpc deps to consumers (services).
+    compileOnly "io.grpc:grpc-api:1.63.0"
+    compileOnly "io.grpc:grpc-stub:1.63.0"
+    compileOnly "io.grpc:grpc-protobuf:1.63.0"
+
+    // Because FutureStub uses ListenableFuture
+    compileOnly "com.google.guava:guava:32.1.3-jre"
+
+    // Optional (commonly used for @Generated on some setups)
     compileOnly "org.apache.tomcat:annotations-api:6.0.53"
+
     testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
 }
 
 protobuf {
-    protoc { artifact = "com.google.protobuf:protoc:3.25.3" }
-    plugins { grpc { artifact = "io.grpc:protoc-gen-grpc-java:1.65.1" } }
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.3"
+    }
+    plugins {
+        grpc {
+            // IMPORTANT: align generator with runtime gRPC used by net.devh starter (1.63.0)
+            artifact = "io.grpc:protoc-gen-grpc-java:1.63.0"
+        }
+    }
     generateProtoTasks {
         all().each { t ->
             t.plugins { grpc {} }
