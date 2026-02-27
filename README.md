@@ -1,41 +1,66 @@
-# gRPC CRUD Проект
+Вот аккуратная, структурированная и “показываемая ментору” финальная версия README.md.
+Можешь просто заменить текущий файл этим содержимым.
 
-**Учебный микросервисный проект, демонстрирующий CRUD-операции, взаимодействие между сервисами через gRPC и обмен событиями через Kafka.**
+---
+
+```markdown
+# gRPC CRUD Project
+
+Учебный микросервисный проект, демонстрирующий CRUD-операции,
+взаимодействие сервисов через **gRPC** и обмен событиями через **Apache Kafka**.
 
 ---
 
 ## 🧩 Описание проекта
 
-Проект показывает, как можно построить распределённую систему из нескольких микросервисов на базе **Spring Boot**, **gRPC** и **Apache Kafka**.  
-Каждый сервис выполняет свою роль, общаясь с другими через gRPC-вызовы и асинхронные события.
+Проект демонстрирует построение распределённой системы на базе:
 
-Цель — реализовать полноценный пример взаимодействия сервисов **User ↔ Post ↔ Order ↔ Notification**,  
-включая работу с базами данных, механизм оркестрации (Saga) и запуск всей системы через Docker Compose.
+- Spring Boot 3
+- gRPC + Protobuf
+- Apache Kafka
+- PostgreSQL
+- Docker Compose
+
+Система состоит из нескольких микросервисов, взаимодействующих:
+
+User ↔ Post ↔ Order ↔ Notification
+
+Цель проекта — реализовать:
+
+- gRPC взаимодействие между сервисами
+- Асинхронное событийное взаимодействие через Kafka
+- Оркестрацию через Saga
+- Запуск всей системы через Docker Compose
+- Подготовку инфраструктуры, близкой к production
 
 ---
 
 ## 🏗️ Структура проекта
 
 ```
+
 grpc-crud-project/
- ├── common-proto/              # Общие .proto контракты и сгенерированные gRPC классы
- ├── user-service/              # CRUD для пользователей (PostgreSQL + gRPC)
- ├── post-service/              # CRUD для постов + логика "резервации"
- ├── order-service/             # Оркестратор: вызывает user/post через gRPC и публикует события в Kafka
- ├── notification-service/      # Консьюмер Kafka, логирующий уведомления
- ├── docker/                    # Docker Compose, .env, вспомогательные скрипты
- └── README.md
-```
+├── common-proto/              # Общие .proto контракты и сгенерированные gRPC классы
+├── user-service/              # CRUD пользователей (PostgreSQL + gRPC)
+├── post-service/              # CRUD постов + резервирование
+├── order-service/             # Оркестратор (gRPC + Kafka)
+├── notification-service/      # Kafka consumer
+├── docker/                    # Docker Compose, .env, вспомогательные скрипты
+└── README.md
+
+````
 
 ---
 
 ## ⚙️ Технологический стек
 
-| Компонент | Технологии |
+| Компонент | Технология |
 |------------|-------------|
 | Язык | Java 21 |
 | Фреймворк | Spring Boot 3.5.x |
-| Взаимодействие | gRPC, Protobuf |
+| RPC | gRPC |
+| Контракты | Protobuf |
+| gRPC Starter | net.devh grpc-spring-boot-starter |
 | Сообщения | Apache Kafka |
 | База данных | PostgreSQL + Flyway |
 | Сборка | Gradle (Groovy DSL) |
@@ -45,136 +70,159 @@ grpc-crud-project/
 
 ---
 
-## 🚀 Запуск проекта
+## 🚀 Сборка проекта
 
-### Предварительные требования
-- Установлен **JDK 21+**
-- Установлены **Docker** и **Docker Compose**
-- **Gradle 8+**
-- (опционально) **IntelliJ IDEA** с плагином gRPC
-
-### Клонирование и сборка
 ```bash
-git clone https://github.com/<твой-логин>/grpc-crud-project.git
+git clone https://github.com/<your-username>/grpc-crud-project.git
 cd grpc-crud-project
 ./gradlew clean build
-```
+````
 
-### Запуск всех сервисов
+---
+
+## 🚀 Запуск всех сервисов (Docker)
+
 ```bash
 docker compose up --build
 ```
 
 ---
 
-## 🧱 Модули и прогресс
+# 🧪 Локальная разработка
 
-| Этап | Модуль | Статус | Описание |
-|:------|:--------|:--------:|:-------------|
-| ✅ | **common-proto** | 🟢 готов | .proto контракты для User и Post |
-| 🚧 | **user-service** | 🟡 в работе | CRUD + gRPC сервер для пользователей |
-| ⏳ | **post-service** | ⚪ запланировано | CRUD + резервирование постов |
-| ⏳ | **order-service** | ⚪ запланировано | Оркестрация User/Post + события в Kafka |
-| ⏳ | **notification-service** | ⚪ запланировано | Kafka consumer для уведомлений |
+Каждый сервис можно запускать отдельно.
 
 ---
 
-## ⚙️ Локальная разработка
+## ▶ Пример: user-service
 
-Каждый сервис можно запускать отдельно:
-
-### Пример: `user-service`
 ```bash
 cd user-service
 ./gradlew bootRun
 ```
-- gRPC порт: **9090**
-- REST порт (если включён): **8081**
-- Проверка через grpcurl:
-  ```bash
-  grpcurl -plaintext localhost:9090 ru.itwizardry.grpc.user.UserService/GetUser -d '{"id": 1}'
-  ```
 
-### Пример: `post-service`
-```bash
-cd post-service
-./gradlew bootRun
-```
-- gRPC порт: **9091**
-- REST порт: **8082**
+### Порты
 
-### Пример: `order-service`
-```bash
-cd order-service
-./gradlew bootRun
-```
-- gRPC порт: **9092**
-- REST порт: **8083**
-- Публикует события в Kafka (топик `orders`)
-
-### Пример: `notification-service`
-```bash
-cd notification-service
-./gradlew bootRun
-```
-- Подписывается на Kafka-топик `orders`
-- Логирует уведомления в консоль
+* gRPC: **9090**
+* REST (если включён): **8081**
 
 ---
 
-## 🌍 Порты и переменные окружения
+## 🧪 gRPC Smoke Test (UserService)
 
-| Сервис | REST | gRPC | PostgreSQL | Kafka | Примечание |
-|---------|------|------|-------------|--------|-------------|
-| user-service | 8081 | 9090 | 5433 | – | CRUD пользователей |
-| post-service | 8082 | 9091 | 5434 | – | CRUD постов + резерв |
-| order-service | 8083 | 9092 | 5435 | 9094 | Оркестрация + Kafka producer |
-| notification-service | 8084 | – | – | 9094 | Kafka consumer |
+### 1️⃣ Запуск
 
-**Пример `.env`:**
-```env
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=admin
-POSTGRES_DB=appdb
-KAFKA_BROKER=kafka:9094
+```bash
+./gradlew :user-service:bootRun --args='--spring.profiles.active=grpc-local'
+```
+
+### 2️⃣ Проверка доступных сервисов
+
+```bash
+grpcurl -plaintext localhost:9090 list
+```
+
+Ожидается:
+
+```
+grpc.health.v1.Health
+grpc.reflection.v1alpha.ServerReflection
+ru.itwizardry.grpc.user.UserService
+```
+
+### 3️⃣ Успешный вызов
+
+```bash
+grpcurl -plaintext -d '{"id":1}' \
+localhost:9090 \
+ru.itwizardry.grpc.user.UserService/GetUser
+```
+
+Ответ:
+
+```json
+{
+  "id": "1",
+  "username": "mikhail",
+  "email": "mikhail@example.com"
+}
+```
+
+### 4️⃣ Негативные сценарии
+
+```bash
+# NOT_FOUND
+grpcurl -plaintext -d '{"id":2}' \
+localhost:9090 \
+ru.itwizardry.grpc.user.UserService/GetUser
+
+# INVALID_ARGUMENT
+grpcurl -plaintext -d '{"id":0}' \
+localhost:9090 \
+ru.itwizardry.grpc.user.UserService/GetUser
 ```
 
 ---
 
-## 📋 План работ
+## 📦 Порты сервисов
 
-- [x] Базовая структура проекта
-- [x] Модуль `common-proto` и генерация gRPC стаба
-- [ ] CRUD + gRPC для `UserService`
-- [ ] CRUD + резерв для `PostService`
-- [ ] Оркестрация и события в `OrderService`
-- [ ] Консьюмер `NotificationService`
-- [ ] Docker Compose для всех сервисов
-- [ ] Интеграционные тесты (Testcontainers + gRPC)
-- [ ] Метрики и наблюдаемость (Prometheus + Grafana)
+| Сервис               | REST | gRPC | PostgreSQL | Kafka |
+| -------------------- | ---- | ---- | ---------- | ----- |
+| user-service         | 8081 | 9090 | 5433       | –     |
+| post-service         | 8082 | 9091 | 5434       | –     |
+| order-service        | 8083 | 9092 | 5435       | 9094  |
+| notification-service | 8084 | –    | –          | 9094  |
 
 ---
 
-## 👥 Команда
+## 📊 Текущий прогресс
 
-| Роль | Участник |
-|------|-----------|
-| Тимлид | @mikhail-teamlead |
-| Разработчики | @evgeniy-dev, @ivan-dev, @dmitry-dev, @artem-dev |
+| Модуль               | Статус                 | Описание                         |
+| -------------------- | ---------------------- | -------------------------------- |
+| common-proto         | 🟢 готов               | gRPC контракты User/Post         |
+| user-service         | 🟡 gRPC API реализован | Метод GetUser + обработка ошибок |
+| post-service         | ⚪ в планах             | CRUD + резервирование            |
+| order-service        | ⚪ в планах             | Оркестрация + Kafka producer     |
+| notification-service | ⚪ в планах             | Kafka consumer                   |
+
+---
+
+## 📋 Roadmap
+
+* [x] Структура проекта
+* [x] common-proto и генерация gRPC стаба
+* [x] gRPC сервер в user-service
+* [x] Реализация unary метода GetUser
+* [ ] CRUD для user-service
+* [ ] CRUD + резерв для post-service
+* [ ] Оркестрация через OrderService
+* [ ] События Kafka
+* [ ] Docker Compose стек
+* [ ] Интеграционные тесты (Testcontainers)
+* [ ] Метрики и наблюдаемость
 
 ---
 
 ## 📚 Полезные ссылки
 
-- [Spring Boot](https://spring.io/projects/spring-boot)
-- [gRPC-Java](https://grpc.io/docs/languages/java/)
-- [Spring for Apache Kafka](https://spring.io/projects/spring-kafka)
-- [Testcontainers](https://testcontainers.com/)
-- [Шаблон Saga (microservices.io)](https://microservices.io/patterns/data/saga.html)
+* [https://spring.io/projects/spring-boot](https://spring.io/projects/spring-boot)
+* [https://grpc.io/docs/languages/java/](https://grpc.io/docs/languages/java/)
+* [https://spring.io/projects/spring-kafka](https://spring.io/projects/spring-kafka)
+* [https://testcontainers.com/](https://testcontainers.com/)
+* [https://microservices.io/patterns/data/saga.html](https://microservices.io/patterns/data/saga.html)
 
 ---
 
 ## 🧠 Примечание
 
-Проект создаётся в учебных целях — для закрепления знаний по **микросервисной архитектуре**, **gRPC** и **Kafka**.  
-В дальнейшем планируется добавить оркестрацию саги, логирование, метрики и CI/CD.
+Проект создаётся в учебных целях для закрепления:
+
+* микросервисной архитектуры
+* gRPC
+* Kafka
+* оркестрации (Saga)
+* инфраструктуры и DevOps-подхода
+
+Дальнейшие шаги — развитие бизнес-логики и усложнение взаимодействия сервисов.
+
+```
